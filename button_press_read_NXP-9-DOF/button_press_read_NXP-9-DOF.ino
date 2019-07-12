@@ -6,6 +6,10 @@
 int buttonPin = 21;
 int buttonState = 0;
 int lastButtonState = 0;
+int firstvec = 0;
+int switchPin0 = 20;
+int switchPin1 = 19;
+int command = 0;
 int i;
 const int pinArray[4] = {9,10,11,13};
 
@@ -82,6 +86,8 @@ void setup(void)
     pinMode(13, OUTPUT);
 
     i = 0;
+    Serial.println("[");
+
 }
 
 void loop(void)
@@ -89,9 +95,13 @@ void loop(void)
     buttonState = digitalRead(buttonPin);
     if (buttonState != lastButtonState) {
         if (buttonState == HIGH) {
-            Serial.println("start");
+            /* get the pin setting */
+            command = digitalRead(switchPin0)+2*digitalRead(switchPin1);
+            Serial.print("{\"command\": "); Serial.print(command);
+            Serial.println(", \"vectors\": [");
+            firstvec = 1;
         } else {
-            Serial.println("stop");
+            Serial.println("]},");
         }
     }
       if (buttonState == HIGH) {
@@ -103,17 +113,23 @@ void loop(void)
         accelmag.getEvent(&aevent, &mevent);
 
         /* Display the results (speed is measured in rad/s) */
-        Serial.print("AcX = "); Serial.print(aevent.acceleration.x, 4); 
-        Serial.print(" | ");
-        Serial.print("AcY = "); Serial.print(aevent.acceleration.y, 4); 
-        Serial.print(" | ");
-        Serial.print("AcZ = "); Serial.print(aevent.acceleration.z, 4); 
-        Serial.print(" | ");
-        Serial.print("GyX = "); Serial.print(event.gyro.x); 
-        Serial.print(" | ");
-        Serial.print("GyY = "); Serial.print(event.gyro.y); 
-        Serial.print(" | ");
-        Serial.print("GyZ = "); Serial.println(event.gyro.z); 
+        if (firstvec == 1) {
+          Serial.print("[");
+          firstvec = 0;
+        } else {
+          Serial.print(",[");
+        }
+        Serial.print(aevent.acceleration.x, 4); 
+        Serial.print(", ");
+        Serial.print(aevent.acceleration.y, 4); 
+        Serial.print(", ");
+        Serial.print(aevent.acceleration.z, 4); 
+        Serial.print(", ");
+        Serial.print(event.gyro.x); 
+        Serial.print(", ");
+        Serial.print(event.gyro.y); 
+        Serial.print(", ");
+        Serial.print(event.gyro.z); Serial.println("]"); 
     }
     lastButtonState = buttonState;
     delay(100);
