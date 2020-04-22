@@ -9,7 +9,7 @@ int lastButtonState = 0;
 int firstvec = 0;
 int switchPin0 = 20;
 int switchPin1 = 19;
-int command = 0;
+int command_int = 0;
 int i;
 const int pinArray[4] = {9,10,11,13};
 
@@ -96,8 +96,8 @@ void loop(void)
     if (buttonState != lastButtonState) {
         if (buttonState == HIGH) {
             /* get the pin setting */
-            command = digitalRead(switchPin0)+2*digitalRead(switchPin1);
-            Serial.print("{\"command\": "); Serial.print(command);
+            command_int = digitalRead(switchPin0)+2*digitalRead(switchPin1);
+            Serial.print("{\"command\": "); Serial.print(command_int);
             Serial.println(", \"vectors\": [");
             firstvec = 1;
         } else {
@@ -132,5 +132,5 @@ void loop(void)
         Serial.print(event.gyro.z); Serial.println("]"); 
     }
     lastButtonState = buttonState;
-    delay(100);
+    delay(200);
 }
